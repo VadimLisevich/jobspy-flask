@@ -37,15 +37,23 @@ def scrape():
     if jobs.empty:
         return "<p>No jobs found.</p>"
 
-    # Отладочная информация в логах Render
     print("🔎 Получены столбцы:", list(jobs.columns))
 
     result = "<h3>Found Jobs:</h3><ul>"
     for _, row in jobs.iterrows():
         title = row.get('title', 'No Title')
         company = row.get('company', 'Unknown Company')
-        link = row.get('url', '#')
-        result += f"<li><a href='{link}' target='_blank'>{title} – {company}</a></li>"
+        description = row.get('description', 'No description available')
+        link = row.get('url', None)
+
+        if link and isinstance(link, str) and link.startswith("http"):
+            result += f"<li><a href='{link}' target='_blank'>{title} – {company}</a></li>"
+        else:
+            # Показываем текст вакансии, если нет ссылки
+            result += (
+                f"<li><strong>{title}</strong> – {company}<br>"
+                f"<small>{description}</small></li>"
+            )
     result += "</ul>"
 
     return result
